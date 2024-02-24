@@ -26,6 +26,7 @@ public class UITest2 {
 
 	@BeforeMethod
 	public void setupWebDriver() {
+		// Initialize WebDriver
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		System.setProperty("webdriver.chrome.driver", "D:\\AutomationPractice\\chromedriver_win32\\chromedriver.exe");
@@ -34,6 +35,7 @@ public class UITest2 {
 
 	@AfterMethod
 	public void tearDownWebDriver() {
+		// Quit WebDriver
 		if (driver != null) {
 			driver.quit();
 		}
@@ -43,30 +45,37 @@ public class UITest2 {
 	public void testBrokenLinks() throws IOException {
 		long startTime = System.currentTimeMillis();
 
+		// Navigate to the test URL
 		driver.get("https://rahulshettyacademy.com/AutomationPractice/");
 
+		// Find all links on the page
 		List<WebElement> links = driver.findElements(By.xpath("//*[@class=\"gf-t\"]//ul/li/a"));
 		for (WebElement link : links) {
 			try {
+				// Check each link for validity
 				URL url = new URL(link.getAttribute("href"));
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("HEAD");
 				conn.connect();
 				int responseCode = conn.getResponseCode();
 				if (responseCode >= 400) {
+					// Print broken link and fail the test
 					System.out.println(link.getAttribute("href"));
 					softAssert.fail("Link is broken: " + link.getAttribute("href"));
 				}
 			} catch (IOException e) {
+				// Print exception and fail the test
 				e.printStackTrace();
 				softAssert.fail("Exception occurred: " + e.getMessage());
 			}
 		}
 
+		// Calculate and print sequential execution time
 		long endTime = System.currentTimeMillis();
 		long durationSequential = endTime - startTime;
 		System.out.println("Sequential execution time: " + durationSequential + " milliseconds");
 
+		// Assert all failures
 		softAssert.assertAll();
 	}
 
@@ -74,30 +83,37 @@ public class UITest2 {
 	public void testBrokenLinksParallel() throws IOException {
 		long startTime = System.currentTimeMillis();
 
+		// Navigate to the test URL
 		driver.get("https://rahulshettyacademy.com/AutomationPractice/");
 
+		// Find all links on the page
 		List<WebElement> links = driver.findElements(By.xpath("//*[@class=\"gf-t\"]//ul/li/a"));
 		links.parallelStream().forEach(link -> {
 			try {
+				// Check each link for validity
 				URL url = new URL(link.getAttribute("href"));
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("HEAD");
 				conn.connect();
 				int responseCode = conn.getResponseCode();
 				if (responseCode >= 400) {
+					// Print broken link and fail the test
 					System.out.println(link.getAttribute("href"));
 					softAssert.fail("Link is broken: " + link.getAttribute("href"));
 				}
 			} catch (IOException e) {
+				// Print exception and fail the test
 				e.printStackTrace();
 				softAssert.fail("Exception occurred: " + e.getMessage());
 			}
 		});
 
+		// Calculate and print parallel execution time
 		long endTime = System.currentTimeMillis();
 		long durationParallel = endTime - startTime;
 		System.out.println("Parallel execution time: " + durationParallel + " milliseconds");
 
+		// Assert all failures
 		softAssert.assertAll();
 	}
 
